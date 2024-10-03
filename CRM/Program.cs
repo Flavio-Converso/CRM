@@ -6,6 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+//builder.Services
+//  .AddScoped<IAppointmentService, AppointmentService>()
+//  .AddScoped<IAvailabilityService, AvailabilityService >()
+//  .AddScoped<ICompanyService, CompanyService >()
+//  .AddScoped<ICompanyWorkerService, CompanyWorkerService >()
+//  .AddScoped<ICustomerService, CustomerService >()
+//  .AddScoped<IOfferedServicesService, OfferedServicesService >()
+
 
 // Configure Entity Framework with PostgreSQL
 builder.Services.AddDbContext<DataContext>(options =>
