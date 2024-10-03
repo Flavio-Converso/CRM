@@ -1,8 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.Entities
 {
+    [Index(nameof(Email), IsUnique = true)]
+    [Index(nameof(Phone), IsUnique = true)]
     public class Company
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -28,9 +31,6 @@ namespace CRM.Models.Entities
         public int CompanyTypeId { get; set; }
         [ForeignKey("CompanyTypeId")]
         public required CompanyType CompanyType { get; set; }
-
-        // Navigation property for one-to-many relationship with Appointments
-        public ICollection<Appointment> Appointments { get; set; } = [];
 
         // Navigation property for many-to-many relationship with OfferedServices
         public ICollection<OfferedService> OfferedServices { get; set; } = [];

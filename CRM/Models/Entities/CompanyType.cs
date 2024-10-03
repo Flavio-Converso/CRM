@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.Entities
 {
+    [Index(nameof(Name), IsUnique = true)]
     public class CompanyType
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -66,27 +66,7 @@ namespace CRM.Data
                         j.ToTable("CompanyOfferedServices");
                     });
 
-            // Customer and Appointment
-            modelBuilder.Entity<Customer>()
-                .HasMany(c => c.Appointments)
-                .WithMany(a => a.Customers)
-                .UsingEntity<Dictionary<string, object>>(
-                    "CustomerAppointments",
-                    j => j
-                        .HasOne<Appointment>()
-                        .WithMany()
-                        .HasForeignKey("AppointmentId")
-                        .HasConstraintName("FK_CustomerAppointments_Appointments"),
-                    j => j
-                        .HasOne<Customer>()
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .HasConstraintName("FK_CustomerAppointments_Customers"),
-                    j =>
-                    {
-                        j.HasKey("CustomerId", "AppointmentId");
-                        j.ToTable("CustomerAppointments");
-                    });
+
         }
     }
 }

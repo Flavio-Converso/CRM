@@ -19,7 +19,7 @@ namespace CRM.Models.Entities
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         // Navigation property for many-to-many relationship with Companies
         public ICollection<Company> Companies { get; set; } = [];

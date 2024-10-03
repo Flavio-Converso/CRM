@@ -33,8 +33,10 @@ namespace CRM.Models.Entities
         [ForeignKey("CompanyWorkerId")]
         public required CompanyWorker CompanyWorker { get; set; }
 
-        // Navigation property for many-to-many relationship with Customers
-        public ICollection<Customer> Customers { get; set; } = [];
+        // Foreign key and navigation property to Customer 
+        public int CustomerId { get; set; }
+        [ForeignKey("CustomerId")]
+        public required Customer Customer { get; set; }
 
         // Navigation property for many-to-many relationship with Services
         public ICollection<OfferedService> OfferedServices { get; set; } = [];
