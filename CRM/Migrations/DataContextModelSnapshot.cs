@@ -45,14 +45,14 @@ namespace CRM.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AppointmentId"));
 
-                    b.Property<int?>("CompanyId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("CompanyWorkerId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
@@ -78,9 +78,9 @@ namespace CRM.Migrations
 
                     b.HasKey("AppointmentId");
 
-                    b.HasIndex("CompanyId");
-
                     b.HasIndex("CompanyWorkerId");
+
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Appointments");
                 });
@@ -149,6 +149,12 @@ namespace CRM.Migrations
 
                     b.HasIndex("CompanyTypeId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
                     b.ToTable("Companies");
                 });
 
@@ -174,6 +180,9 @@ namespace CRM.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("CompanyTypeId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("CompanyTypes");
                 });
@@ -219,6 +228,12 @@ namespace CRM.Migrations
 
                     b.HasIndex("CompanyId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
                     b.ToTable("CompanyWorkers");
                 });
 
@@ -258,6 +273,12 @@ namespace CRM.Migrations
 
                     b.HasKey("CustomerId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
                     b.ToTable("Customers");
                 });
 
@@ -283,7 +304,7 @@ namespace CRM.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("OfferedServiceId");
@@ -306,21 +327,6 @@ namespace CRM.Migrations
                     b.ToTable("CompanyOfferedServices", (string)null);
                 });
 
-            modelBuilder.Entity("CustomerAppointments", b =>
-                {
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("CustomerId", "AppointmentId");
-
-                    b.HasIndex("AppointmentId");
-
-                    b.ToTable("CustomerAppointments", (string)null);
-                });
-
             modelBuilder.Entity("AppointmentServices", b =>
                 {
                     b.HasOne("CRM.Models.Entities.Appointment", null)
@@ -340,17 +346,21 @@ namespace CRM.Migrations
 
             modelBuilder.Entity("CRM.Models.Entities.Appointment", b =>
                 {
-                    b.HasOne("CRM.Models.Entities.Company", null)
-                        .WithMany("Appointments")
-                        .HasForeignKey("CompanyId");
-
                     b.HasOne("CRM.Models.Entities.CompanyWorker", "CompanyWorker")
-                        .WithMany()
+                        .WithMany("Appointments")
                         .HasForeignKey("CompanyWorkerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CRM.Models.Entities.Customer", "Customer")
+                        .WithMany("Appointments")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CompanyWorker");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("CRM.Models.Entities.Availability", b =>
@@ -403,31 +413,19 @@ namespace CRM.Migrations
                         .HasConstraintName("FK_CompanyOfferedServices_OfferedServices");
                 });
 
-            modelBuilder.Entity("CustomerAppointments", b =>
+            modelBuilder.Entity("CRM.Models.Entities.CompanyType", b =>
                 {
-                    b.HasOne("CRM.Models.Entities.Appointment", null)
-                        .WithMany()
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_CustomerAppointments_Appointments");
-
-                    b.HasOne("CRM.Models.Entities.Customer", null)
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_CustomerAppointments_Customers");
+                    b.Navigation("Companies");
                 });
 
-            modelBuilder.Entity("CRM.Models.Entities.Company", b =>
+            modelBuilder.Entity("CRM.Models.Entities.CompanyWorker", b =>
                 {
                     b.Navigation("Appointments");
                 });
 
-            modelBuilder.Entity("CRM.Models.Entities.CompanyType", b =>
+            modelBuilder.Entity("CRM.Models.Entities.Customer", b =>
                 {
-                    b.Navigation("Companies");
+                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

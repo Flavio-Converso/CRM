@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CRM.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241003145821_InitCreate")]
-    partial class InitCreate
+    [Migration("20241003182756_UniqueCostraints")]
+    partial class UniqueCostraints
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,32 +25,17 @@ namespace CRM.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AppointmentCustomer", b =>
+            modelBuilder.Entity("AppointmentServices", b =>
                 {
-                    b.Property<int>("AppointmentsAppointmentId")
+                    b.Property<int>("AppointmentId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CustomersCustomerId")
+                    b.Property<int>("OfferedServiceId")
                         .HasColumnType("integer");
 
-                    b.HasKey("AppointmentsAppointmentId", "CustomersCustomerId");
+                    b.HasKey("AppointmentId", "OfferedServiceId");
 
-                    b.HasIndex("CustomersCustomerId");
-
-                    b.ToTable("CustomerAppointments", (string)null);
-                });
-
-            modelBuilder.Entity("AppointmentOfferedService", b =>
-                {
-                    b.Property<int>("AppointmentsAppointmentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OfferedServicesOfferedServiceId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("AppointmentsAppointmentId", "OfferedServicesOfferedServiceId");
-
-                    b.HasIndex("OfferedServicesOfferedServiceId");
+                    b.HasIndex("OfferedServiceId");
 
                     b.ToTable("AppointmentServices", (string)null);
                 });
@@ -63,14 +48,14 @@ namespace CRM.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AppointmentId"));
 
-                    b.Property<int?>("CompanyId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("CompanyWorkerId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
@@ -96,9 +81,9 @@ namespace CRM.Migrations
 
                     b.HasKey("AppointmentId");
 
-                    b.HasIndex("CompanyId");
-
                     b.HasIndex("CompanyWorkerId");
+
+                    b.HasIndex("CustomerId");
 
                     b.ToTable("Appointments");
                 });
@@ -167,6 +152,12 @@ namespace CRM.Migrations
 
                     b.HasIndex("CompanyTypeId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
                     b.ToTable("Companies");
                 });
 
@@ -192,6 +183,9 @@ namespace CRM.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("CompanyTypeId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("CompanyTypes");
                 });
@@ -237,6 +231,12 @@ namespace CRM.Migrations
 
                     b.HasIndex("CompanyId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
                     b.ToTable("CompanyWorkers");
                 });
 
@@ -276,6 +276,12 @@ namespace CRM.Migrations
 
                     b.HasKey("CustomerId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Phone")
+                        .IsUnique();
+
                     b.ToTable("Customers");
                 });
 
@@ -301,7 +307,7 @@ namespace CRM.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("OfferedServiceId");
@@ -309,64 +315,55 @@ namespace CRM.Migrations
                     b.ToTable("OfferedServices");
                 });
 
-            modelBuilder.Entity("CompanyOfferedService", b =>
+            modelBuilder.Entity("CompanyOfferedServices", b =>
                 {
-                    b.Property<int>("CompaniesCompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("OfferedServicesOfferedServiceId")
+                    b.Property<int>("OfferedServiceId")
                         .HasColumnType("integer");
 
-                    b.HasKey("CompaniesCompanyId", "OfferedServicesOfferedServiceId");
+                    b.HasKey("CompanyId", "OfferedServiceId");
 
-                    b.HasIndex("OfferedServicesOfferedServiceId");
+                    b.HasIndex("OfferedServiceId");
 
                     b.ToTable("CompanyOfferedServices", (string)null);
                 });
 
-            modelBuilder.Entity("AppointmentCustomer", b =>
+            modelBuilder.Entity("AppointmentServices", b =>
                 {
                     b.HasOne("CRM.Models.Entities.Appointment", null)
                         .WithMany()
-                        .HasForeignKey("AppointmentsAppointmentId")
+                        .HasForeignKey("AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CRM.Models.Entities.Customer", null)
-                        .WithMany()
-                        .HasForeignKey("CustomersCustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("AppointmentOfferedService", b =>
-                {
-                    b.HasOne("CRM.Models.Entities.Appointment", null)
-                        .WithMany()
-                        .HasForeignKey("AppointmentsAppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_AppointmentServices_Appointments");
 
                     b.HasOne("CRM.Models.Entities.OfferedService", null)
                         .WithMany()
-                        .HasForeignKey("OfferedServicesOfferedServiceId")
+                        .HasForeignKey("OfferedServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_AppointmentServices_OfferedServices");
                 });
 
             modelBuilder.Entity("CRM.Models.Entities.Appointment", b =>
                 {
-                    b.HasOne("CRM.Models.Entities.Company", null)
-                        .WithMany("Appointments")
-                        .HasForeignKey("CompanyId");
-
                     b.HasOne("CRM.Models.Entities.CompanyWorker", "CompanyWorker")
-                        .WithMany()
+                        .WithMany("Appointments")
                         .HasForeignKey("CompanyWorkerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CRM.Models.Entities.Customer", "Customer")
+                        .WithMany("Appointments")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CompanyWorker");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("CRM.Models.Entities.Availability", b =>
@@ -402,29 +399,36 @@ namespace CRM.Migrations
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("CompanyOfferedService", b =>
+            modelBuilder.Entity("CompanyOfferedServices", b =>
                 {
                     b.HasOne("CRM.Models.Entities.Company", null)
                         .WithMany()
-                        .HasForeignKey("CompaniesCompanyId")
+                        .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_CompanyOfferedServices_Companies");
 
                     b.HasOne("CRM.Models.Entities.OfferedService", null)
                         .WithMany()
-                        .HasForeignKey("OfferedServicesOfferedServiceId")
+                        .HasForeignKey("OfferedServiceId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CRM.Models.Entities.Company", b =>
-                {
-                    b.Navigation("Appointments");
+                        .IsRequired()
+                        .HasConstraintName("FK_CompanyOfferedServices_OfferedServices");
                 });
 
             modelBuilder.Entity("CRM.Models.Entities.CompanyType", b =>
                 {
                     b.Navigation("Companies");
+                });
+
+            modelBuilder.Entity("CRM.Models.Entities.CompanyWorker", b =>
+                {
+                    b.Navigation("Appointments");
+                });
+
+            modelBuilder.Entity("CRM.Models.Entities.Customer", b =>
+                {
+                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

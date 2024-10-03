@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -56,7 +57,7 @@ namespace CRM.Migrations
                     Description = table.Column<string>(type: "text", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -92,21 +93,21 @@ namespace CRM.Migrations
                 name: "CompanyOfferedServices",
                 columns: table => new
                 {
-                    CompaniesCompanyId = table.Column<int>(type: "integer", nullable: false),
-                    OfferedServicesOfferedServiceId = table.Column<int>(type: "integer", nullable: false)
+                    CompanyId = table.Column<int>(type: "integer", nullable: false),
+                    OfferedServiceId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CompanyOfferedServices", x => new { x.CompaniesCompanyId, x.OfferedServicesOfferedServiceId });
+                    table.PrimaryKey("PK_CompanyOfferedServices", x => new { x.CompanyId, x.OfferedServiceId });
                     table.ForeignKey(
-                        name: "FK_CompanyOfferedServices_Companies_CompaniesCompanyId",
-                        column: x => x.CompaniesCompanyId,
+                        name: "FK_CompanyOfferedServices_Companies",
+                        column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "CompanyId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CompanyOfferedServices_OfferedServices_OfferedServicesOffer~",
-                        column: x => x.OfferedServicesOfferedServiceId,
+                        name: "FK_CompanyOfferedServices_OfferedServices",
+                        column: x => x.OfferedServiceId,
                         principalTable: "OfferedServices",
                         principalColumn: "OfferedServiceId",
                         onDelete: ReferentialAction.Cascade);
@@ -153,21 +154,22 @@ namespace CRM.Migrations
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CompanyWorkerId = table.Column<int>(type: "integer", nullable: false),
-                    CompanyId = table.Column<int>(type: "integer", nullable: true)
+                    CustomerId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Appointments", x => x.AppointmentId);
                     table.ForeignKey(
-                        name: "FK_Appointments_Companies_CompanyId",
-                        column: x => x.CompanyId,
-                        principalTable: "Companies",
-                        principalColumn: "CompanyId");
-                    table.ForeignKey(
                         name: "FK_Appointments_CompanyWorkers_CompanyWorkerId",
                         column: x => x.CompanyWorkerId,
                         principalTable: "CompanyWorkers",
                         principalColumn: "WorkerId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Appointments_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "CustomerId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -197,54 +199,25 @@ namespace CRM.Migrations
                 name: "AppointmentServices",
                 columns: table => new
                 {
-                    AppointmentsAppointmentId = table.Column<int>(type: "integer", nullable: false),
-                    OfferedServicesOfferedServiceId = table.Column<int>(type: "integer", nullable: false)
+                    AppointmentId = table.Column<int>(type: "integer", nullable: false),
+                    OfferedServiceId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppointmentServices", x => new { x.AppointmentsAppointmentId, x.OfferedServicesOfferedServiceId });
+                    table.PrimaryKey("PK_AppointmentServices", x => new { x.AppointmentId, x.OfferedServiceId });
                     table.ForeignKey(
-                        name: "FK_AppointmentServices_Appointments_AppointmentsAppointmentId",
-                        column: x => x.AppointmentsAppointmentId,
+                        name: "FK_AppointmentServices_Appointments",
+                        column: x => x.AppointmentId,
                         principalTable: "Appointments",
                         principalColumn: "AppointmentId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AppointmentServices_OfferedServices_OfferedServicesOfferedS~",
-                        column: x => x.OfferedServicesOfferedServiceId,
+                        name: "FK_AppointmentServices_OfferedServices",
+                        column: x => x.OfferedServiceId,
                         principalTable: "OfferedServices",
                         principalColumn: "OfferedServiceId",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateTable(
-                name: "CustomerAppointments",
-                columns: table => new
-                {
-                    AppointmentsAppointmentId = table.Column<int>(type: "integer", nullable: false),
-                    CustomersCustomerId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CustomerAppointments", x => new { x.AppointmentsAppointmentId, x.CustomersCustomerId });
-                    table.ForeignKey(
-                        name: "FK_CustomerAppointments_Appointments_AppointmentsAppointmentId",
-                        column: x => x.AppointmentsAppointmentId,
-                        principalTable: "Appointments",
-                        principalColumn: "AppointmentId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CustomerAppointments_Customers_CustomersCustomerId",
-                        column: x => x.CustomersCustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "CustomerId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_CompanyId",
-                table: "Appointments",
-                column: "CompanyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_CompanyWorkerId",
@@ -252,9 +225,14 @@ namespace CRM.Migrations
                 column: "CompanyWorkerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AppointmentServices_OfferedServicesOfferedServiceId",
+                name: "IX_Appointments_CustomerId",
+                table: "Appointments",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppointmentServices_OfferedServiceId",
                 table: "AppointmentServices",
-                column: "OfferedServicesOfferedServiceId");
+                column: "OfferedServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Availabilities_CompanyWorkerId",
@@ -267,19 +245,14 @@ namespace CRM.Migrations
                 column: "CompanyTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompanyOfferedServices_OfferedServicesOfferedServiceId",
+                name: "IX_CompanyOfferedServices_OfferedServiceId",
                 table: "CompanyOfferedServices",
-                column: "OfferedServicesOfferedServiceId");
+                column: "OfferedServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompanyWorkers_CompanyId",
                 table: "CompanyWorkers",
                 column: "CompanyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CustomerAppointments_CustomersCustomerId",
-                table: "CustomerAppointments",
-                column: "CustomersCustomerId");
         }
 
         /// <inheritdoc />
@@ -295,19 +268,16 @@ namespace CRM.Migrations
                 name: "CompanyOfferedServices");
 
             migrationBuilder.DropTable(
-                name: "CustomerAppointments");
+                name: "Appointments");
 
             migrationBuilder.DropTable(
                 name: "OfferedServices");
 
             migrationBuilder.DropTable(
-                name: "Appointments");
+                name: "CompanyWorkers");
 
             migrationBuilder.DropTable(
                 name: "Customers");
-
-            migrationBuilder.DropTable(
-                name: "CompanyWorkers");
 
             migrationBuilder.DropTable(
                 name: "Companies");
