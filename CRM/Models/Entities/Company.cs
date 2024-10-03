@@ -1,5 +1,4 @@
-﻿using CRM.Models.Relationships;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CRM.Models.Entities
@@ -34,6 +33,6 @@ namespace CRM.Models.Entities
         public ICollection<Appointment> Appointments { get; set; } = [];
 
         // Navigation property for many-to-many relationship with OfferedServices
-        public ICollection<CompanyOfferedService> CompanyOfferedServices { get; set; } = [];
+        public ICollection<OfferedService> OfferedServices { get; set; } = [];
     }
 }

@@ -18,6 +18,6 @@ namespace CRM.Models.Entities
         public DateTime? UpdatedAt { get; set; }
 
         // Navigation property for companies
-        public ICollection<Company> Companies { get; set; } = new List<Company>();
+        public ICollection<Company> Companies { get; set; } = [];
     }
 }
