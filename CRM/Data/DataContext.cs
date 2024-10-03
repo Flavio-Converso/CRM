@@ -26,19 +26,67 @@ namespace CRM.Data
             modelBuilder.Entity<Appointment>()
                 .HasMany(a => a.OfferedServices)
                 .WithMany(os => os.Appointments)
-                .UsingEntity(j => j.ToTable("AppointmentServices"));
+                .UsingEntity<Dictionary<string, object>>(
+                    "AppointmentServices",
+                    j => j
+                        .HasOne<OfferedService>()
+                        .WithMany()
+                        .HasForeignKey("OfferedServiceId")
+                        .HasConstraintName("FK_AppointmentServices_OfferedServices"),
+                    j => j
+                        .HasOne<Appointment>()
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .HasConstraintName("FK_AppointmentServices_Appointments"),
+                    j =>
+                    {
+                        j.HasKey("AppointmentId", "OfferedServiceId");
+                        j.ToTable("AppointmentServices");
+                    });
 
             // Company and OfferedService
             modelBuilder.Entity<Company>()
                 .HasMany(c => c.OfferedServices)
                 .WithMany(os => os.Companies)
-                .UsingEntity(j => j.ToTable("CompanyOfferedServices"));
+                .UsingEntity<Dictionary<string, object>>(
+                    "CompanyOfferedServices",
+                    j => j
+                        .HasOne<OfferedService>()
+                        .WithMany()
+                        .HasForeignKey("OfferedServiceId")
+                        .HasConstraintName("FK_CompanyOfferedServices_OfferedServices"),
+                    j => j
+                        .HasOne<Company>()
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .HasConstraintName("FK_CompanyOfferedServices_Companies"),
+                    j =>
+                    {
+                        j.HasKey("CompanyId", "OfferedServiceId");
+                        j.ToTable("CompanyOfferedServices");
+                    });
 
             // Customer and Appointment
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.Appointments)
                 .WithMany(a => a.Customers)
-                .UsingEntity(j => j.ToTable("CustomerAppointments"));
+                .UsingEntity<Dictionary<string, object>>(
+                    "CustomerAppointments",
+                    j => j
+                        .HasOne<Appointment>()
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .HasConstraintName("FK_CustomerAppointments_Appointments"),
+                    j => j
+                        .HasOne<Customer>()
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .HasConstraintName("FK_CustomerAppointments_Customers"),
+                    j =>
+                    {
+                        j.HasKey("CustomerId", "AppointmentId");
+                        j.ToTable("CustomerAppointments");
+                    });
         }
     }
 }
